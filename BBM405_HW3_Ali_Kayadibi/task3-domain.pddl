@@ -1,0 +1,48 @@
+(define (domain cargo)
+  (:requirements :strips)
+
+  (:predicates (in ?c ?p) (in ?c ?ca) (in ?c ?t) (out ?c) (at-airport ?x ?a) (at-garage ?x ?ga) (at-railway ?x ?ta)
+               (plane ?p) (airport ?a) (cargo ?c) (car ?ca) (garage ?ga) (train ?t) (railway ?ta))
+
+  (:action load :parameters (?c ?p ?a)
+           :precondition (and (at-airport ?c ?a) (at-airport ?p ?a) 
+                              (out ?c) (plane ?p) (cargo ?c) (airport ?a))
+           :effect (and (not (at-airport ?c ?a)) (in ?c ?p) (not (out ?c))))
+  
+  (:action unload :parameters (?c ?p ?a)
+           :precondition (and (in ?c ?p) (at-airport ?p ?a)
+                              (plane ?p) (cargo ?c) (airport ?a))
+           :effect (and (not (in ?c ?p)) (at-airport ?c ?a) (out ?c)))
+(:action loadtrain :parameters (?c ?t ?ta)
+           :precondition (and (at-railway ?c ?ta) (at-railway ?p ?ta) 
+                              (out ?c) (train ?t) (cargo ?c) (railway ?ta))
+           :effect (and (not (at-railway ?c ?ta)) (in ?c ?t) (not (out ?c))))
+  
+  (:action unloadtrain :parameters (?c ?t ?ta)
+           :precondition (and (in ?c ?t) (at-airport ?t ?ta)
+                              (train ?t) (cargo ?c) (railway ?ta))
+           :effect (and (not (in ?c ?t)) (at-railway ?c ?ta) (out ?c)))
+
+(:action loadcar :parameters (?c ?ca ?ga)
+           :precondition (and (at-garage ?c ?ga) (at-garage ?ca  ?ga) 
+                              (out ?c) (car ?ca) (cargo ?c) (garage ?ga))
+           :effect (and (not (at-garage ?c ?ga)) (in ?c ?ca) (not (out ?c))))
+  
+  (:action unloadcar :parameters (?c ?ca ?ga)
+           :precondition (and (in ?c ?ca) (at-garage ?ca ?ga)
+                              (car ?ca) (cargo ?c) (garage ?ga))
+           :effect (and (not (in ?c ?ca)) (at-garage ?c ?ga) (out ?c)))
+
+  
+  (:action fly :parameters (?p ?from ?to)
+           :precondition (and (at-airport ?p ?from) 
+                              (plane ?p) (airport ?from) (airport ?to))
+           :effect (and (not (at-airport ?p ?from)) (at-airport ?p ?to)))
+(:action drive:parameters (?ca ?from ?to)
+           :precondition (and (at-garage ?ca ?from) 
+                              (car ?ca) (garage ?from) (garage ?to))
+           :effect (and (not (at-garage ?ca ?from)) (at-garage ?ca ?to)))
+(:action rail :parameters (?t ?from ?to)
+           :precondition (and (at-railway ?t ?from) 
+                              (train ?t) (railway ?from) (railway ?to))
+           :effect (and (not (at-railway ?t ?from)) (at-railway ?p ?to))))
